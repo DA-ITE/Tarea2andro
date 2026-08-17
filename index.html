@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diseña una apertura pedagógica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --red:#FF0E49;
+      --red-dark:#D9003E;
+      --dark:#241F21;
+      --dark-2:#2D2426;
+      --wine:#6B1E36;
+      --soft:#FFF1F5;
+      --paper:#F7F4F4;
+      --white:#FFFFFF;
+      --text:#171416;
+      --muted:#6E6669;
+      --border:#E6DEE1;
+      --green:#009860;
+      --radius-lg:18px;
+      --radius-md:12px;
+      --shadow:0 14px 34px rgba(36,31,33,.10);
+    }
+
+    *{box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{
+      margin:0;
+      padding:24px;
+      background:var(--paper);
+      color:var(--text);
+      font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+      font-size:18px;
+    }
+
+    button,input,textarea{font-family:inherit;}
+    button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
+      outline:3px solid rgba(255,14,73,.25);
+      outline-offset:2px;
+    }
+
+    .app{width:100%;max-width:1120px;margin:0 auto;}
+    .screen{display:none;}
+    .screen.active{display:block;animation:fadeIn .22s ease;}
+    @keyframes fadeIn{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      min-height:300px;
+      padding:34px;
+      border-radius:var(--radius-lg);
+      background:linear-gradient(112deg,var(--dark) 0%,#3A2028 58%,#711B38 130%);
+      color:white;
+      box-shadow:var(--shadow);
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      width:270px;height:270px;
+      right:-70px;top:-105px;
+      border:2px solid rgba(255,255,255,.16);
+      border-radius:50%;
+    }
+    .hero::before{
+      content:"";
+      position:absolute;
+      width:140px;height:14px;
+      right:34px;bottom:32px;
+      background:var(--red);
+      transform:skewX(-28deg);
+      opacity:.95;
+    }
+    .hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;position:relative;z-index:2;}
+    .sise-logo{
+      display:inline-flex;align-items:center;gap:10px;
+      background:#fff;color:var(--red);
+      border-radius:8px;padding:9px 15px;
+      box-shadow:0 8px 20px rgba(0,0,0,.12);
+    }
+    .sise-logo strong{font-size:25px;font-weight:900;line-height:1;}
+    .sise-logo span{color:var(--dark);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;}
+    .time-chip{
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.20);
+      color:#fff;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:14px;
+      font-weight:800;
+      letter-spacing:.07em;
+      text-transform:uppercase;
+    }
+    .hero-content{position:relative;z-index:2;max-width:830px;margin-top:34px;}
+    .badge{
+      display:inline-block;
+      background:var(--red);
+      color:white;
+      padding:7px 11px;
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      border-radius:4px;
+    }
+    h1,h2,h3,p{margin-top:0;}
+    h1{
+      margin:14px 0 10px;
+      font-size:clamp(45px,7vw,68px);
+      line-height:.91;
+      font-weight:900;
+      text-transform:uppercase;
+      max-width:900px;
+    }
+    h1 span{color:var(--red);}
+    .hero p{max-width:790px;font-size:19px;line-height:1.45;color:#F7EBEF;margin-bottom:0;}
+
+    .route-wrap{margin:20px 0 0;background:var(--dark);border-radius:var(--radius-md);padding:16px 20px;color:white;}
+    .route-label{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#D9D1D4;margin-bottom:12px;}
+    .route{display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:center;gap:10px;}
+    .node{
+      width:38px;height:38px;border-radius:50%;border:2px solid var(--red);
+      background:var(--dark);color:#fff;font-size:15px;font-weight:900;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .node.active,.node.done{background:var(--red);}
+    .route-line{height:4px;background:#655D60;border-radius:5px;overflow:hidden;}
+    .route-line.done{background:var(--red);}
+    .route-caption{display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:8px;text-align:center;color:#D6CDD0;font-size:14px;font-weight:700;}
+
+    .meta-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:20px;}
+    .meta-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);padding:18px;min-height:138px;}
+    .meta-kicker{color:var(--red);font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px;}
+    .meta-card h2{font-size:25px;line-height:1.05;margin-bottom:7px;font-weight:900;}
+    .meta-card p{font-size:16px;line-height:1.45;color:#595154;margin-bottom:0;}
+
+    .case-card{margin-top:18px;background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);}
+    .case-header{display:flex;justify-content:space-between;gap:18px;align-items:center;background:var(--red);color:white;padding:20px 24px;}
+    .case-header small{display:block;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;}
+    .case-header h2{font-size:32px;line-height:1;margin:0;font-weight:900;text-transform:uppercase;}
+    .case-number{font-size:50px;line-height:1;font-weight:900;opacity:.28;}
+    .case-body{padding:24px;display:grid;grid-template-columns:1.45fr .85fr;gap:22px;}
+    .case-story p{font-size:18px;line-height:1.56;color:#413B3D;}
+    .case-story strong{color:var(--dark);}
+    .signal-box{background:var(--soft);border-left:6px solid var(--red);border-radius:8px;padding:17px 18px;}
+    .signal-box h3{font-size:22px;margin-bottom:8px;color:var(--dark);}
+    .signal-box ul{margin:0;padding-left:20px;}
+    .signal-box li{font-size:16px;line-height:1.45;margin:6px 0;color:#4E4548;}
+
+    .framework{margin-top:18px;background:var(--dark);color:white;border-radius:var(--radius-lg);padding:24px;}
+    .framework-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:16px;}
+    .framework h2{font-size:34px;margin:0;font-weight:900;text-transform:uppercase;}
+    .framework-head p{font-size:15px;color:#D8CED1;margin:0;max-width:480px;text-align:right;line-height:1.35;}
+    .framework-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+    .framework-step{background:white;color:var(--text);border-radius:10px;padding:16px;min-height:165px;position:relative;overflow:hidden;}
+    .framework-step::before{content:"";position:absolute;left:0;top:0;width:6px;height:100%;background:var(--red);}
+    .framework-step .num{color:var(--red);font-size:13px;font-weight:900;letter-spacing:.12em;}
+    .framework-step h3{font-size:23px;margin:4px 0 7px;font-weight:900;}
+    .framework-step p{font-size:15.5px;line-height:1.42;color:#5C5457;margin:0;}
+
+    .actions,.footer-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px;}
+    .btn{
+      border:none;border-radius:8px;padding:13px 19px;
+      font-size:17px;font-weight:900;cursor:pointer;text-decoration:none;
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      transition:.18s ease;
+    }
+    .btn:hover{transform:translateY(-1px);}
+    .btn-primary{background:var(--red);color:white;}
+    .btn-primary:hover{background:var(--red-dark);}
+    .btn-secondary{background:white;color:var(--dark);border:1px solid var(--dark);}
+    .btn-secondary:hover{background:var(--dark);color:white;}
+    .btn-dark{background:var(--dark);color:white;}
+    .btn-dark:hover{background:#3A3335;}
+
+    .canvas-shell{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);}
+    .canvas-header{background:var(--dark);color:white;padding:25px 28px;position:relative;overflow:hidden;}
+    .canvas-header::after{content:"»";position:absolute;right:24px;top:5px;font-size:100px;font-weight:900;color:var(--red);opacity:.32;line-height:1;}
+    .canvas-header small{font-size:12px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:#FFD4E0;}
+    .canvas-header h2{font-size:41px;text-transform:uppercase;font-weight:900;margin:5px 0 6px;line-height:.95;}
+    .canvas-header p{font-size:17px;color:#E6DDE0;margin:0;line-height:1.4;max-width:780px;}
+    .canvas-body{padding:26px;}
+
+    .work-meta{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+    .field{margin-bottom:18px;}
+    .field label{display:block;font-size:18px;font-weight:900;color:var(--dark);margin-bottom:6px;}
+    .field small{display:block;color:#71686B;font-size:14px;line-height:1.4;margin-bottom:8px;}
+    input,textarea{
+      width:100%;border:1px solid #D8D0D3;border-radius:9px;padding:12px 13px;
+      font-size:17px;color:var(--text);background:white;
+    }
+    textarea{min-height:125px;resize:vertical;line-height:1.45;}
+    textarea.tall{min-height:155px;}
+    input:focus,textarea:focus{border-color:var(--red);}
+
+    .canvas-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .canvas-block{border:1px solid var(--border);border-radius:12px;padding:18px;background:#fff;}
+    .canvas-block.full{grid-column:1/-1;}
+    .block-top{display:flex;align-items:flex-start;gap:11px;margin-bottom:10px;}
+    .block-num{flex:0 0 34px;width:34px;height:34px;border-radius:50%;background:var(--red);color:white;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;}
+    .block-top h3{font-size:23px;margin:0 0 2px;font-weight:900;}
+    .block-top p{font-size:14.5px;color:#6D6467;line-height:1.35;margin:0;}
+
+    .timing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px;}
+    .timing-item{background:var(--soft);border-radius:9px;padding:12px;}
+    .timing-item strong{display:block;color:var(--red);font-size:15px;margin-bottom:5px;}
+    .timing-item span{font-size:14.5px;line-height:1.3;color:#544B4E;}
+
+    .autosave{display:flex;align-items:center;gap:8px;color:#5D5558;font-size:14px;margin-top:4px;}
+    .dot{width:9px;height:9px;background:var(--green);border-radius:50%;}
+    .progress-card{margin-top:18px;background:var(--soft);border-radius:10px;padding:14px 16px;}
+    .progress-meta{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;}
+    .progress{height:8px;border-radius:999px;background:#E6D6DB;overflow:hidden;margin-top:8px;}
+    .progress span{display:block;height:100%;width:0;background:var(--red);transition:width .2s ease;}
+    .status{display:none;margin-top:14px;padding:12px 14px;border-radius:8px;background:var(--soft);border-left:5px solid var(--red);font-size:16px;color:#56313D;}
+    .status.show{display:block;}
+
+    .helper-callout{margin:0 0 20px;background:#111;color:white;border-left:6px solid var(--red);border-radius:6px;padding:14px 16px;font-size:16px;line-height:1.42;}
+    .helper-callout strong{color:#fff;}
+
+
+
+    /* Pantalla inicial simple */
+    .intro-summary{
+      margin-top:18px;background:#fff;border:1px solid var(--border);
+      border-left:6px solid var(--red);border-radius:var(--radius-md);
+      padding:20px 22px;
+    }
+    .intro-summary h2{font-size:28px;margin:0 0 8px;font-weight:900;}
+    .intro-summary p{font-size:17px;line-height:1.5;color:#51494C;margin:0;}
+    .what-to-do{border-left-color:var(--dark);}
+    .simple-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+    .simple-info{background:var(--soft);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;}
+    .simple-info strong{color:var(--red);font-size:14px;text-transform:uppercase;letter-spacing:.06em;}
+    .simple-info span{font-size:16px;line-height:1.35;color:#423B3D;}
+    .what-note{margin-top:14px!important;}
+    .section-lead{
+      background:var(--dark);color:#fff;border-radius:var(--radius-lg);
+      padding:24px 26px;margin-bottom:18px;
+    }
+    .section-lead small{display:block;color:#FFD4E0;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;}
+    .section-lead h2{font-size:38px;line-height:1;margin:0 0 7px;font-weight:900;text-transform:uppercase;}
+    .section-lead p{font-size:17px;line-height:1.45;color:#E7DDE0;margin:0;max-width:820px;}
+
+    @media(max-width:900px){
+      .meta-grid,.framework-grid{grid-template-columns:1fr 1fr;}
+      .case-body{grid-template-columns:1fr;}
+      .timing-grid{grid-template-columns:1fr 1fr;}
+    }
+    @media(max-width:680px){
+      body{padding:12px;font-size:17px;}
+      .hero{padding:24px 20px;}
+      .hero-top{align-items:flex-start;}
+      .sise-logo span{display:none;}
+      .meta-grid,.framework-grid,.canvas-grid,.work-meta,.simple-info-grid{grid-template-columns:1fr;}
+      .canvas-block.full{grid-column:auto;}
+      .framework-head{align-items:flex-start;flex-direction:column;}
+      .framework-head p{text-align:left;}
+      .route-caption{font-size:12px;}
+      .case-header{align-items:flex-start;}
+      .timing-grid{grid-template-columns:1fr;}
+      .footer-actions .btn,.footer-actions a{width:100%;}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+
+  <section id="startScreen" class="screen active" aria-labelledby="activityTitle">
+    <div class="hero">
+      <div class="hero-top">
+      </div>
+      <div class="hero-content">
+        <h1 id="activityTitle">Diseña una <span>apertura pedagógica</span> para una sesión virtual real</h1>
+        <p>En esta actividad crearás una apertura breve para una clase virtual, partiendo de una situación realista y usando un framework sencillo de activación.</p>
+      </div>
+    </div>
+
+    <div class="intro-summary">
+      <h2>Consigna</h2>
+      <p><strong>Propósito:</strong> diseña una apertura pedagógica breve para una sesión virtual real que conecte con la experiencia de tus estudiantes, active su participación y deje claro el propósito de aprendizaje antes de entrar al contenido.</p>
+    </div>
+
+    <div class="intro-summary what-to-do">
+      <h2>¿Qué harás?</h2>
+      <div class="simple-info-grid">
+        <div class="simple-info"><strong>Actividad</strong><span>Diseñar una apertura pedagógica para una sesión virtual real.</span></div>
+        <div class="simple-info"><strong>Herramienta</strong><span>Framework de activación + Plantilla Canvas.</span></div>
+        <div class="simple-info"><strong>Tiempo</strong><span>25 minutos.</span></div>
+        <div class="simple-info"><strong>Modalidad</strong><span>Asíncrona.</span></div>
+      </div>
+      <p class="what-note">Primero revisarás un caso realista. Luego completarás tu Canvas en línea, descargarás tu propuesta en PDF y la compartirás en el foro.</p>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="showScreen('caseScreen')">Ver el caso →</button>
+    </div>
+  </section>
+
+  <section id="caseScreen" class="screen" aria-labelledby="caseTitle">
+    <div class="section-lead">
+      <small>Paso 1 · Lee el escenario</small>
+      <h2 id="caseTitle">Caso: El silencio de las 7:00 p. m.</h2>
+      <p>Lee la situación e identifica qué debería cambiar la docente para lograr una apertura más activa, breve y conectada con la realidad de sus estudiantes.</p>
+    </div>
+
+    <article class="case-card" style="margin-top:0;">
+      <div class="case-header">
+        <div><small>Escenario docente realista</small><h2>El silencio de las 7:00 p. m.</h2></div>
+        <div class="case-number">01</div>
+      </div>
+      <div class="case-body">
+        <div class="case-story">
+          <p><strong>Andrea tiene una sesión virtual de Gestión Empresarial a las 7:00 p. m.</strong> El grupo tiene 31 estudiantes. Varios se conectan desde el trabajo o durante el trayecto a casa; algunos ingresan desde el celular y entre 6 y 8 suelen incorporarse durante los primeros diez minutos.</p>
+          <p>En la sesión anterior, Andrea comenzó compartiendo la presentación y explicando el tema durante casi 15 minutos. La mayoría mantuvo la cámara apagada, el chat tuvo pocas respuestas y, cuando preguntó «¿se entendió?», solo dos estudiantes contestaron.</p>
+          <p>Hoy trabajará <strong>toma de decisiones a partir de indicadores</strong>. Quiere iniciar de otra manera: con una apertura de máximo 8–10 minutos que permita participar desde el celular, recuperar experiencias laborales o cotidianas y mostrar por qué el tema importa.</p>
+        </div>
+        <aside class="signal-box">
+          <h3>¿Qué debes observar?</h3>
+          <ul>
+            <li>Los estudiantes ingresan progresivamente.</li>
+            <li>La apertura expositiva genera poca participación.</li>
+            <li>El grupo tiene experiencias laborales que pueden aprovecharse.</li>
+            <li>La actividad debe funcionar también desde el celular.</li>
+          </ul>
+        </aside>
+      </div>
+    </article>
+
+    <section class="framework" aria-labelledby="frameworkTitle">
+      <div class="framework-head">
+        <h2 id="frameworkTitle">Framework de activación</h2>
+        <p>Usa estos cuatro pasos como guía para diseñar el inicio de tu propia sesión.</p>
+      </div>
+      <div class="framework-grid">
+        <article class="framework-step"><div class="num">01 · REALIDAD</div><h3>Conecta</h3><p>Presenta una situación reconocible para el estudiante.</p></article>
+        <article class="framework-step"><div class="num">02 · RETO</div><h3>Provoca</h3><p>Plantea una pregunta que invite a elegir, priorizar o decidir.</p></article>
+        <article class="framework-step"><div class="num">03 · VOZ</div><h3>Haz participar</h3><p>Recoge respuestas con una acción simple y rápida.</p></article>
+        <article class="framework-step"><div class="num">04 · PUENTE</div><h3>Enlaza</h3><p>Conecta las respuestas con el propósito de la sesión.</p></article>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="showScreen('startScreen')">← Volver</button>
+      <button class="btn btn-primary" onclick="showScreen('workScreen')">Trabajar mi Canvas →</button>
+    </div>
+  </section>
+
+  <section id="workScreen" class="screen" aria-labelledby="canvasTitle">
+    <div class="canvas-shell">
+      <header class="canvas-header">
+        <small>Plantilla Canvas · Framework de activación</small>
+        <h2 id="canvasTitle">Mi apertura pedagógica</h2>
+        <p>Diseña una apertura aplicable a una sesión virtual real. Tus respuestas se guardan automáticamente en este navegador.</p>
+      </header>
+
+      <div class="canvas-body">
+        <div class="helper-callout"><strong>Recuerda:</strong> no diseñes una “dinámica” aislada. Construye una secuencia breve donde el detonante, la participación y el puente conduzcan al propósito de aprendizaje.</div>
+
+        <div class="work-meta">
+          <div class="field">
+            <label for="participant">Nombre del docente</label>
+            <input id="participant" data-save type="text" placeholder="Escribe tu nombre completo">
+          </div>
+          <div class="field">
+            <label for="course">Curso / unidad / tema</label>
+            <input id="course" data-save type="text" placeholder="Ej.: Gestión Empresarial · Indicadores para decidir">
+          </div>
+        </div>
+
+        <div class="canvas-grid">
+          <section class="canvas-block">
+            <div class="block-top"><div class="block-num">01</div><div><h3>Realidad de entrada</h3><p>¿Con qué situación real vas a conectar?</p></div></div>
+            <div class="field">
+              <small>Describe una escena concreta, breve y reconocible para tus estudiantes.</small>
+              <textarea id="reality" data-save placeholder="Ej.: Tu equipo tiene dos indicadores que muestran resultados opuestos y debes decidir qué acción tomar primero..."></textarea>
+            </div>
+          </section>
+
+          <section class="canvas-block">
+            <div class="block-top"><div class="block-num">02</div><div><h3>Pregunta detonante</h3><p>¿Qué decisión o tensión hará pensar?</p></div></div>
+            <div class="field">
+              <small>Evita preguntas de sí/no o «¿entendieron?». Haz que el estudiante elija, priorice, compare o explique.</small>
+              <textarea id="challenge" data-save placeholder="Ej.: Si solo pudieras revisar un indicador antes de decidir, ¿cuál elegirías y por qué?"></textarea>
+            </div>
+          </section>
+
+          <section class="canvas-block">
+            <div class="block-top"><div class="block-num">03</div><div><h3>Microacción participativa</h3><p>¿Qué hará el estudiante en 1–3 minutos?</p></div></div>
+            <div class="field">
+              <small>Debe funcionar también desde celular y con conectividad limitada.</small>
+              <textarea id="participation" data-save placeholder="Ej.: Responder en el chat con una opción + una razón en máximo 12 palabras."></textarea>
+            </div>
+          </section>
+
+          <section class="canvas-block">
+            <div class="block-top"><div class="block-num">04</div><div><h3>Recuperación de voces</h3><p>¿Cómo harás visible lo que respondió el grupo?</p></div></div>
+            <div class="field">
+              <small>Define qué patrones, contrastes o respuestas recuperarás sin comentar una por una.</small>
+              <textarea id="voices" data-save placeholder="Ej.: Agrupar respuestas en dos criterios, leer dos contrastes y preguntar qué información falta para decidir mejor."></textarea>
+            </div>
+          </section>
+
+          <section class="canvas-block full">
+            <div class="block-top"><div class="block-num">05</div><div><h3>Puente al propósito</h3><p>¿Cómo conectarás las respuestas con el aprendizaje de la sesión?</p></div></div>
+            <div class="field">
+              <small>Escribe literalmente la transición que podrías decir al grupo.</small>
+              <textarea class="tall" id="bridge" data-save placeholder="Ej.: 'Lo que acaba de pasar muestra que decidir no depende de mirar más datos, sino de interpretar cuáles son relevantes. Hoy vamos a trabajar justamente cómo leer indicadores para tomar decisiones con criterio.'"></textarea>
+            </div>
+          </section>
+
+          <section class="canvas-block full">
+            <div class="block-top"><div class="block-num">06</div><div><h3>Secuencia y tiempo</h3><p>Organiza la apertura para que no se convierta en una mini clase.</p></div></div>
+            <div class="timing-grid">
+              <div class="timing-item"><strong>0–2 min</strong><span>Presenta la realidad o situación detonante.</span></div>
+              <div class="timing-item"><strong>2–4 min</strong><span>Lanza el reto y da una instrucción simple.</span></div>
+              <div class="timing-item"><strong>4–7 min</strong><span>Recoge y organiza las respuestas del grupo.</span></div>
+              <div class="timing-item"><strong>7–10 min</strong><span>Construye el puente y declara el propósito.</span></div>
+            </div>
+            <div class="field" style="margin-top:14px;margin-bottom:0;">
+              <small>¿Qué ajustes harás a esta secuencia para tu contexto real?</small>
+              <textarea id="timing" data-save placeholder="Especifica duración, herramienta y decisión docente en cada momento."></textarea>
+            </div>
+          </section>
+
+          <section class="canvas-block full">
+            <div class="block-top"><div class="block-num">07</div><div><h3>Chequeo de viabilidad</h3><p>Anticipa una barrera y define tu plan B.</p></div></div>
+            <div class="field" style="margin-bottom:0;">
+              <small>Piensa en ingreso tardío, silencio, celular, conectividad o poco tiempo.</small>
+              <textarea id="planb" data-save placeholder="Ej.: Si el chat no se activa, usaré una reacción rápida (1, 2 o 3) y recogeré dos razones por audio antes de hacer el puente."></textarea>
+            </div>
+          </section>
+        </div>
+
+        <div class="progress-card">
+          <div class="progress-meta"><span>Avance de tu Canvas</span><strong id="progressText">0%</strong></div>
+          <div class="progress"><span id="progressBar"></span></div>
+        </div>
+        <div class="autosave"><span class="dot"></span><span id="saveStatus">Borrador listo para guardarse automáticamente.</span></div>
+        <div id="statusMessage" class="status" role="status" aria-live="polite"></div>
+
+        <div class="footer-actions">
+          <button class="btn btn-secondary" onclick="showScreen('caseScreen')">← Volver al caso</button>
+          <button class="btn btn-primary" onclick="downloadPDF()">Descargar mi Canvas en PDF</button>
+          <a class="btn btn-dark" href="https://aulad.educad.pe/courses/536/discussion_topics/898?module_item_id=6027" target="_blank" rel="noopener noreferrer">Ir al foro →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div id="reportTemplate" style="display:none;">
+  <div style="font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;color:#241F21;background:#FFFFFF;width:794px;padding:0;">
+    <div style="background:#241F21;color:white;padding:34px 40px;position:relative;overflow:hidden;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;">
+        <div style="font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#FFD6E1;">Framework de activación · Plantilla Canvas</div>
+      </div>
+      <div style="font-size:38px;font-weight:900;line-height:.98;text-transform:uppercase;max-width:630px;">Mi apertura pedagógica para una sesión virtual</div>
+      <div style="width:86px;height:7px;background:#FF0E49;margin-top:17px;border-radius:6px;"></div>
+    </div>
+
+    <div style="padding:26px 40px 34px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:19px;">
+        <div style="background:#FFF1F5;border-left:6px solid #FF0E49;border-radius:8px;padding:12px 14px;">
+          <div style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#FF0E49;">Docente</div>
+          <div id="reportName" style="font-size:16px;font-weight:800;margin-top:3px;">—</div>
+        </div>
+        <div style="background:#F7F4F4;border-radius:8px;padding:12px 14px;">
+          <div style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#6A6064;">Curso / tema</div>
+          <div id="reportCourse" style="font-size:16px;font-weight:800;margin-top:3px;">—</div>
+        </div>
+      </div>
+
+      <div style="background:#241F21;color:white;border-radius:9px;padding:14px 16px;margin-bottom:18px;">
+        <div style="font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#FF9AB4;margin-bottom:4px;">Secuencia de activación</div>
+        <div style="font-size:16px;font-weight:700;">Realidad → Reto → Voz → Puente · apertura sugerida: 8–10 min</div>
+      </div>
+
+      <div id="reportSections"></div>
+
+      <div style="margin-top:24px;padding-top:14px;border-top:1px solid #E5DEE1;display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-size:11px;color:#756C6F;">Canvas generado desde la actividad interactiva</div>
+        <div id="reportDate" style="font-size:11px;font-weight:800;color:#FF0E49;">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  const STORAGE_KEY = "apertura_pedagogica_canvas_v2";
+  const requiredIds = ["participant","course","reality","challenge","participation","voices","bridge","timing","planb"];
+
+  function showScreen(screenId){
+    document.querySelectorAll(".screen").forEach(screen => screen.classList.remove("active"));
+    document.getElementById(screenId).classList.add("active");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function getData(){
+    const data = {};
+    document.querySelectorAll("[data-save]").forEach(el => data[el.id] = el.value);
+    return data;
+  }
+
+  function saveDraft(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(getData()));
+      const now = new Date().toLocaleTimeString("es-PE",{hour:"2-digit",minute:"2-digit"});
+      document.getElementById("saveStatus").textContent = "Borrador guardado automáticamente · " + now;
+    }catch(e){
+      document.getElementById("saveStatus").textContent = "El navegador no permitió guardar el borrador localmente.";
+    }
+    updateProgress();
+  }
+
+  function restoreDraft(){
+    try{
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      Object.entries(saved).forEach(([id,value]) => {
+        const el = document.getElementById(id);
+        if(el) el.value = value;
+      });
+    }catch(e){}
+    updateProgress();
+  }
+
+  function updateProgress(){
+    const complete = requiredIds.filter(id => (document.getElementById(id)?.value || "").trim().length > 0).length;
+    const pct = Math.round((complete / requiredIds.length) * 100);
+    document.getElementById("progressText").textContent = pct + "%";
+    document.getElementById("progressBar").style.width = pct + "%";
+  }
+
+  document.querySelectorAll("[data-save]").forEach(el => el.addEventListener("input", saveDraft));
+  restoreDraft();
+
+  async function downloadPDF(){
+    const status = document.getElementById("statusMessage");
+    status.classList.add("show");
+    status.textContent = "Generando tu Canvas en PDF...";
+
+    const participant = document.getElementById("participant").value.trim() || "Docente";
+    const course = document.getElementById("course").value.trim() || "Sesión virtual";
+
+    const fields = [
+      {number:"01",title:"Realidad de entrada",value:document.getElementById("reality").value.trim()},
+      {number:"02",title:"Pregunta detonante",value:document.getElementById("challenge").value.trim()},
+      {number:"03",title:"Microacción participativa",value:document.getElementById("participation").value.trim()},
+      {number:"04",title:"Recuperación de voces",value:document.getElementById("voices").value.trim()},
+      {number:"05",title:"Puente al propósito",value:document.getElementById("bridge").value.trim()},
+      {number:"06",title:"Secuencia y tiempo",value:document.getElementById("timing").value.trim()},
+      {number:"07",title:"Chequeo de viabilidad / plan B",value:document.getElementById("planb").value.trim()}
+    ];
+
+    try{
+      if(!window.html2canvas || !window.jspdf){
+        throw new Error("No se cargaron las librerías de exportación PDF.");
+      }
+
+      document.getElementById("reportName").textContent = participant;
+      document.getElementById("reportCourse").textContent = course;
+      document.getElementById("reportDate").textContent = new Date().toLocaleDateString("es-PE",{day:"2-digit",month:"long",year:"numeric"});
+
+      const sections = document.getElementById("reportSections");
+      sections.innerHTML = fields.map(item => `
+        <div style="margin-bottom:14px;page-break-inside:avoid;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+            <div style="width:29px;height:29px;border-radius:50%;background:#FF0E49;color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;">${item.number}</div>
+            <div style="font-size:18px;font-weight:900;color:#241F21;">${item.title}</div>
+          </div>
+          <div style="border:1px solid #E7E0E3;border-left:5px solid #241F21;border-radius:7px;padding:12px 14px;font-size:13.5px;line-height:1.55;color:#4D4648;white-space:pre-wrap;">${escapeHTML(item.value || "Sin respuesta registrada.")}</div>
+        </div>
+      `).join("");
+
+      const report = document.getElementById("reportTemplate");
+      report.style.display = "block";
+
+      const canvas = await html2canvas(report.firstElementChild,{
+        scale:2,useCORS:true,backgroundColor:"#FFFFFF",windowWidth:794
+      });
+      report.style.display = "none";
+
+      const {jsPDF} = window.jspdf;
+      const pdf = new jsPDF("p","mm","a4");
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const margin = 8;
+      const usableWidth = pageWidth - margin * 2;
+      const imgHeight = (canvas.height * usableWidth) / canvas.width;
+      const printableHeight = pageHeight - margin * 2;
+      const imgData = canvas.toDataURL("image/png");
+
+      let heightLeft = imgHeight;
+      let position = margin;
+      pdf.addImage(imgData,"PNG",margin,position,usableWidth,imgHeight);
+      heightLeft -= printableHeight;
+
+      while(heightLeft > 0){
+        pdf.addPage();
+        position = margin - (imgHeight - heightLeft);
+        pdf.addImage(imgData,"PNG",margin,position,usableWidth,imgHeight);
+        heightLeft -= printableHeight;
+      }
+
+      const safeName = participant.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ_-]/g,"_");
+      pdf.save("Canvas_Apertura_Pedagogica_" + safeName + ".pdf");
+      status.textContent = "Canvas descargado correctamente. Ya puedes compartirlo en el foro.";
+    }catch(error){
+      console.error(error);
+      document.getElementById("reportTemplate").style.display = "none";
+      status.textContent = "No fue posible generar el PDF. Verifica tu conexión y vuelve a intentarlo.";
+    }
+  }
+
+  function escapeHTML(text){
+    return String(text)
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
+  }
+</script>
+</body>
+</html>
